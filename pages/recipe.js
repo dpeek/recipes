@@ -7,14 +7,7 @@ import TagLink from "../components/TagLink";
 
 const renderTags = tags => tags.map((tag, i) => <TagLink key={i} {...tag} />);
 
-const parse = html => {
-  const p = /<p>(.+?)<\/p>/gi;
-  const matches = html.match(p);
-  console.log(matches.map(line => line.substring(3, line.length - 4)));
-};
-
 const Page = ({ title, name, added, tags, ingredients, method }) => {
-  // parse(ingredients);
   return (
     <Layout>
       <div>
