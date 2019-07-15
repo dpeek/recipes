@@ -1,6 +1,8 @@
 const express = require("express");
 const next = require("next");
 const proxy = require("http-proxy-middleware");
+const parseIngredients = require("./utils/parseIngredients");
+const fetch = require("isomorphic-unfetch");
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
@@ -21,6 +23,20 @@ app
       const actualPage = "/tag";
       const queryParams = { id: req.params.id };
       app.render(req, res, actualPage, queryParams);
+    });
+
+    server.get("/api/recipes/:id", (req, res) => {
+      const id = req.params.id;
+      fetch(`http://recipes.peek.ws/api/recipes/${id}`)
+        .then(res => res.json())
+        .then(recipe => {
+          recipe.parsedIngredients = parseIngredients(recipe.ingredients);
+          res.setHeader("Content-Type", "application/json");
+          res.send(recipe);
+        })
+        .catch(error => {
+          res.status(404).send(error);
+        });
     });
 
     server.use(
